@@ -1,0 +1,232 @@
+{
+  "parameter_group": {
+    "DBParameterGroupName": "metronomics-postgres15-params",
+    "DBParameterGroupFamily": "postgres15",
+    "Description": "Custom parameter group for PostgreSQL 15 - Metronomics Platform",
+    "Parameters": [
+      {
+        "ParameterName": "shared_buffers",
+        "ParameterValue": "{DBInstanceClassMemory/32768}MB",
+        "ApplyMethod": "pending-reboot",
+        "Description": "Sets the amount of memory the database server uses for shared memory buffers. Recommended to be 25% of available instance memory."
+      },
+      {
+        "ParameterName": "max_connections",
+        "ParameterValue": "{DBInstanceClassMemory/9531392}",
+        "ApplyMethod": "pending-reboot",
+        "Description": "Determines the maximum number of concurrent connections to the database server."
+      },
+      {
+        "ParameterName": "work_mem",
+        "ParameterValue": "{DBInstanceClassMemory/65536}MB",
+        "ApplyMethod": "pending-reboot",
+        "Description": "Amount of memory used for sort operations and hash tables before writing to temporary disk files."
+      },
+      {
+        "ParameterName": "maintenance_work_mem",
+        "ParameterValue": "{DBInstanceClassMemory/16384}MB",
+        "ApplyMethod": "pending-reboot",
+        "Description": "Maximum amount of memory used for maintenance operations like VACUUM, CREATE INDEX, and ALTER TABLE ADD FOREIGN KEY."
+      },
+      {
+        "ParameterName": "effective_cache_size",
+        "ParameterValue": "{DBInstanceClassMemory/8192}MB",
+        "ApplyMethod": "pending-reboot",
+        "Description": "Estimate of how much memory is available for disk caching by the operating system and PostgreSQL buffer cache."
+      },
+      {
+        "ParameterName": "autovacuum",
+        "ParameterValue": "1",
+        "ApplyMethod": "immediate",
+        "Description": "Controls whether the server should run the autovacuum daemon to automatically vacuum and analyze tables."
+      },
+      {
+        "ParameterName": "autovacuum_vacuum_scale_factor",
+        "ParameterValue": "0.1",
+        "ApplyMethod": "immediate",
+        "Description": "Number of tuple updates or deletes prior to vacuum as a fraction of reltuples."
+      },
+      {
+        "ParameterName": "autovacuum_analyze_scale_factor",
+        "ParameterValue": "0.05",
+        "ApplyMethod": "immediate",
+        "Description": "Number of tuple inserts, updates, or deletes prior to analyze as a fraction of reltuples."
+      },
+      {
+        "ParameterName": "autovacuum_max_workers",
+        "ParameterValue": "3",
+        "ApplyMethod": "pending-reboot",
+        "Description": "Sets the maximum number of simultaneously running autovacuum worker processes."
+      },
+      {
+        "ParameterName": "log_connections",
+        "ParameterValue": "1",
+        "ApplyMethod": "immediate",
+        "Description": "Logs each successful connection to the server log."
+      },
+      {
+        "ParameterName": "log_disconnections",
+        "ParameterValue": "1",
+        "ApplyMethod": "immediate",
+        "Description": "Logs end of a session, including duration, to the server log."
+      },
+      {
+        "ParameterName": "log_statement",
+        "ParameterValue": "ddl",
+        "ApplyMethod": "immediate",
+        "Description": "Sets the type of statements logged. DDL logs all data definition statements, such as CREATE, ALTER, and DROP."
+      },
+      {
+        "ParameterName": "log_min_duration_statement",
+        "ParameterValue": "1000",
+        "ApplyMethod": "immediate",
+        "Description": "Sets the minimum execution time (in milliseconds) above which statements will be logged. Useful for identifying slow queries."
+      },
+      {
+        "ParameterName": "log_lock_waits",
+        "ParameterValue": "1",
+        "ApplyMethod": "immediate",
+        "Description": "Logs long lock waits to help identify and resolve locking issues."
+      },
+      {
+        "ParameterName": "log_temp_files",
+        "ParameterValue": "1024",
+        "ApplyMethod": "immediate",
+        "Description": "Log the use of temporary files larger than this number of kilobytes."
+      },
+      {
+        "ParameterName": "random_page_cost",
+        "ParameterValue": "1.1",
+        "ApplyMethod": "immediate",
+        "Description": "Sets the planner's estimate of the cost of a non-sequentially-fetched disk page. Lower value for SSD storage."
+      },
+      {
+        "ParameterName": "checkpoint_timeout",
+        "ParameterValue": "300",
+        "ApplyMethod": "immediate",
+        "Description": "Maximum time between automatic WAL checkpoints, in seconds."
+      },
+      {
+        "ParameterName": "checkpoint_completion_target",
+        "ParameterValue": "0.9",
+        "ApplyMethod": "immediate",
+        "Description": "Specifies the target of checkpoint completion, as a fraction of total time between checkpoints."
+      },
+      {
+        "ParameterName": "default_statistics_target",
+        "ParameterValue": "100",
+        "ApplyMethod": "immediate",
+        "Description": "Sets the default statistics target for table columns without a column-specific target."
+      },
+      {
+        "ParameterName": "synchronous_commit",
+        "ParameterValue": "on",
+        "ApplyMethod": "immediate",
+        "Description": "Sets the current transaction's synchronization level. 'on' ensures data durability at the cost of some performance."
+      },
+      {
+        "ParameterName": "wal_buffers",
+        "ParameterValue": "16MB",
+        "ApplyMethod": "pending-reboot",
+        "Description": "Sets the number of disk-page buffers in shared memory for WAL."
+      },
+      {
+        "ParameterName": "max_wal_size",
+        "ParameterValue": "2GB",
+        "ApplyMethod": "immediate",
+        "Description": "Sets the WAL size that triggers a checkpoint."
+      },
+      {
+        "ParameterName": "min_wal_size",
+        "ParameterValue": "1GB",
+        "ApplyMethod": "immediate",
+        "Description": "Sets the minimum size to shrink the WAL to."
+      },
+      {
+        "ParameterName": "track_io_timing",
+        "ParameterValue": "1",
+        "ApplyMethod": "immediate",
+        "Description": "Enables timing of database I/O calls. Useful for performance monitoring."
+      },
+      {
+        "ParameterName": "track_activities",
+        "ParameterValue": "1",
+        "ApplyMethod": "immediate",
+        "Description": "Enables monitoring of the current command being executed by any server process."
+      },
+      {
+        "ParameterName": "track_counts",
+        "ParameterValue": "1",
+        "ApplyMethod": "immediate",
+        "Description": "Enables collection of statistics on database activity."
+      },
+      {
+        "ParameterName": "idle_in_transaction_session_timeout",
+        "ParameterValue": "3600000",
+        "ApplyMethod": "immediate",
+        "Description": "Sets the maximum allowed duration of any idle transaction in milliseconds (1 hour)."
+      },
+      {
+        "ParameterName": "statement_timeout",
+        "ParameterValue": "0",
+        "ApplyMethod": "immediate",
+        "Description": "Abort any statement that takes more than the specified amount of time. 0 disables the timeout."
+      },
+      {
+        "ParameterName": "tcp_keepalives_idle",
+        "ParameterValue": "300",
+        "ApplyMethod": "immediate",
+        "Description": "Time between issuing TCP keepalives."
+      },
+      {
+        "ParameterName": "tcp_keepalives_interval",
+        "ParameterValue": "60",
+        "ApplyMethod": "immediate",
+        "Description": "Time between TCP keepalive retransmits."
+      },
+      {
+        "ParameterName": "tcp_keepalives_count",
+        "ParameterValue": "10",
+        "ApplyMethod": "immediate",
+        "Description": "Maximum number of TCP keepalive retransmits."
+      }
+    ],
+    "Tags": [
+      {
+        "Key": "Project",
+        "Value": "metronomics"
+      },
+      {
+        "Key": "ManagedBy",
+        "Value": "Terraform"
+      }
+    ]
+  },
+  "environment_specific_parameters": {
+    "development": {
+      "log_statement": "all",
+      "shared_buffers": "128MB",
+      "work_mem": "4MB",
+      "maintenance_work_mem": "16MB"
+    },
+    "staging": {
+      "log_statement": "mod",
+      "shared_buffers": "{DBInstanceClassMemory/32768}MB",
+      "work_mem": "{DBInstanceClassMemory/65536}MB",
+      "maintenance_work_mem": "{DBInstanceClassMemory/16384}MB"
+    },
+    "production": {
+      "log_statement": "ddl",
+      "shared_buffers": "{DBInstanceClassMemory/32768}MB",
+      "work_mem": "{DBInstanceClassMemory/65536}MB",
+      "maintenance_work_mem": "{DBInstanceClassMemory/16384}MB"
+    }
+  },
+  "usage_notes": {
+    "application": "This parameter group is designed for the Metronomics Platform's PostgreSQL 15.x database instances.",
+    "deployment": "This JSON file should be used with AWS CLI or CloudFormation to create the parameter group before RDS instance creation.",
+    "terraform_integration": "The Terraform module in infrastructure/terraform/modules/database/main.tf references these parameters.",
+    "performance_tuning": "Parameters are optimized for OLTP workloads with a balance of read and write operations.",
+    "monitoring": "Logging parameters are configured to capture connection events, slow queries, and DDL statements for monitoring."
+  }
+}
