@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Set character set for proper rendering -->
+    <meta charset="UTF-8" />
+    <!-- Configure viewport for responsive design across devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Provide a description for search engines and accessibility -->
+    <meta
+      name="description"
+      content="Metronomics Platform - A comprehensive solution for implementing the Metronomics framework for business growth and team alignment"
+    />
+    <!-- Set theme color for browser UI customization -->
+    <meta name="theme-color" content="#ffffff" />
+    <!-- Set the title of the web page -->
+    <title>Metronomics Platform</title>
+    <!-- Link to the favicon for browser tabs and bookmarks -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <!-- Link to Google Fonts for the Inter font family with specified weights -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    />
+    <!-- Link to PrimeReact CSS for component library theme styling - v10.x -->
+    <link
+      rel="stylesheet"
+      href="primereact/resources/themes/lara-light-indigo/theme.css"
+    />
+    <!-- Link to PrimeReact Core CSS for component library core styling - v10.x -->
+    <link rel="stylesheet" href="primereact/resources/primereact.min.css" />
+    <!-- Link to PrimeFlex CSS for utility CSS framework for responsive layouts - v4.x -->
+    <link rel="stylesheet" href="primeflex/primeflex.css" />
+    <!-- Define custom styles for the application -->
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', sans-serif;
+      }
+      #root {
+        height: 100%;
+      }
+      .app-loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background-color: #f8f9fa;
+      }
+      .app-loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Root element where the React application will be mounted -->
+    <div id="root">
+      <div class="app-loading">
+        <div class="app-loading-spinner"></div>
+        <p>Loading Metronomics Platform...</p>
+      </div>
+    </div>
+    <!-- Display a message if JavaScript is disabled -->
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <!-- Import the main JavaScript entry point for the React application -->
+    <script type="module" src="/src/index.tsx"></script>
+  </body>
+</html>
