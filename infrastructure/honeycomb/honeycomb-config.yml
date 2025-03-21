@@ -1,0 +1,128 @@
+# Honeycomb Configuration for Metronomics Platform
+# This configuration defines how telemetry data is collected, processed, and sent to Honeycomb
+
+# Basic Configuration
+version: '1.0'
+api_key: ${HONEYCOMB_API_KEY}  # Replaced during deployment with actual API key
+dataset: metronomics-${ENVIRONMENT}  # Environment-specific dataset (dev, staging, prod)
+service_name: metronomics
+sample_rate: 1  # Sample 100% of requests (adjust in production for high volume)
+debug: false
+
+# Transmission Configuration
+transmission:
+  max_batch_size: 100  # Maximum number of events to include in a batch
+  send_interval: 3000  # Send batches every 3 seconds (in milliseconds)
+  max_concurrent_batches: 10  # Maximum number of concurrent batch transmissions
+  user_agent_addition: metronomics/1.0  # Identifies the application in Honeycomb
+
+# Metrics Configuration
+metrics:
+  report_interval_ms: 15000  # Report metrics every 15 seconds
+  global_tags:  # Tags applied to all metrics
+    environment: ${ENVIRONMENT}
+    application: metronomics
+
+# Tracing Configuration
+tracing:
+  enabled: true
+  sample_rate: 1.0  # Sample 100% of traces (adjust in production for high volume)
+  service_name: metronomics
+  propagation_format: w3c  # Use W3C Trace Context for interoperability
+  sampling_rules:  # Rules to determine which traces to sample
+    - name: errors
+      field: response.status_code
+      operator: '>='
+      value: 400
+      sample_rate: 1.0  # Sample 100% of error responses
+    - name: slow_requests
+      field: duration_ms
+      operator: '>'
+      value: 500
+      sample_rate: 1.0  # Sample 100% of slow requests (>500ms)
+    - name: normal_traffic
+      sample_rate: 0.1  # Sample 10% of normal traffic
+
+# Instrumentation Configuration
+instrumentation:
+  http:
+    enabled: true
+    include_headers:  # Headers to include in the telemetry
+      - content-type
+      - user-agent
+    exclude_headers:  # Headers to exclude for security/privacy
+      - authorization
+      - cookie
+  database:
+    enabled: true
+    sanitize_queries: true  # Remove sensitive data from SQL queries
+    capture_parameters: false  # Do not capture query parameters
+  messaging:
+    enabled: true
+  logging:
+    enabled: true
+    level: info
+
+# Services Configuration
+services:
+  - name: api-gateway
+    dataset: metronomics-api-gateway-${ENVIRONMENT}
+  - name: auth-service
+    dataset: metronomics-auth-service-${ENVIRONMENT}
+  - name: meeting-service
+    dataset: metronomics-meeting-service-${ENVIRONMENT}
+  - name: strategic-planning-service
+    dataset: metronomics-strategic-planning-service-${ENVIRONMENT}
+  - name: metrics-service
+    dataset: metronomics-metrics-service-${ENVIRONMENT}
+  - name: notification-service
+    dataset: metronomics-notification-service-${ENVIRONMENT}
+  - name: frontend
+    dataset: metronomics-frontend-${ENVIRONMENT}
+
+# Attributes Configuration
+attributes:
+  include:  # Attributes to include in the telemetry
+    - http.method
+    - http.url
+    - http.status_code
+    - http.route
+    - db.system
+    - db.operation
+    - db.statement
+    - messaging.system
+    - messaging.destination
+    - messaging.operation
+    - error
+    - exception.type
+    - exception.message
+  exclude:  # Attributes to exclude for security/privacy
+    - http.request.header.authorization
+    - http.request.header.cookie
+    - http.response.header.set-cookie
+
+# Processors Configuration
+processors:
+  - name: batch
+    config:
+      timeout: 1000  # Batch timeout in milliseconds
+      size: 100  # Batch size
+  - name: attribute
+    config:
+      actions:
+        - key: db.statement
+          action: hash  # Hash SQL statements for security
+          when:
+            key: db.system
+            value: postgresql
+        - key: user.email
+          action: delete  # Remove email addresses for privacy
+        - key: user.id
+          action: hash  # Hash user IDs for privacy while maintaining correlation
+
+# Exporters Configuration
+exporters:
+  honeycomb:
+    api_key: ${HONEYCOMB_API_KEY}
+    dataset: metronomics-${ENVIRONMENT}
+    api_endpoint: https://api.honeycomb.io
