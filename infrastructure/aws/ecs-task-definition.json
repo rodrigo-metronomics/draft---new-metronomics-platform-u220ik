@@ -1,0 +1,249 @@
+{
+  "family": "metronomics-${environment}",
+  "executionRoleArn": "arn:aws:iam::${aws_account_id}:role/metronomics-${environment}-task-execution-role",
+  "taskRoleArn": "arn:aws:iam::${aws_account_id}:role/metronomics-${environment}-task-role",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "2048",
+  "memory": "4096",
+  "containerDefinitions": [
+    {
+      "name": "frontend",
+      "image": "${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com/metronomics-${environment}-frontend:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "${environment}"
+        },
+        {
+          "name": "VITE_API_URL",
+          "value": "https://${domain_name}/api"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "VITE_FIREBASE_API_KEY",
+          "valueFrom": "arn:aws:secretsmanager:${aws_region}:${aws_account_id}:secret:metronomics/${environment}/firebase-api-key:FIREBASE_API_KEY::"
+        },
+        {
+          "name": "VITE_FIREBASE_AUTH_DOMAIN",
+          "valueFrom": "arn:aws:secretsmanager:${aws_region}:${aws_account_id}:secret:metronomics/${environment}/firebase-config:AUTH_DOMAIN::"
+        },
+        {
+          "name": "VITE_FIREBASE_PROJECT_ID",
+          "valueFrom": "arn:aws:secretsmanager:${aws_region}:${aws_account_id}:secret:metronomics/${environment}/firebase-config:PROJECT_ID::"
+        },
+        {
+          "name": "VITE_FIREBASE_STORAGE_BUCKET",
+          "valueFrom": "arn:aws:secretsmanager:${aws_region}:${aws_account_id}:secret:metronomics/${environment}/firebase-config:STORAGE_BUCKET::"
+        },
+        {
+          "name": "VITE_FIREBASE_MESSAGING_SENDER_ID",
+          "valueFrom": "arn:aws:secretsmanager:${aws_region}:${aws_account_id}:secret:metronomics/${environment}/firebase-config:MESSAGING_SENDER_ID::"
+        },
+        {
+          "name": "VITE_FIREBASE_APP_ID",
+          "valueFrom": "arn:aws:secretsmanager:${aws_region}:${aws_account_id}:secret:metronomics/${environment}/firebase-config:APP_ID::"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/metronomics-${environment}-frontend",
+          "awslogs-region": "${aws_region}",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "true"
+        }
+      },
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "curl -f http://localhost/health || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      }
+    },
+    {
+      "name": "api",
+      "image": "${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com/metronomics-${environment}-api:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "${environment}"
+        },
+        {
+          "name": "PORT",
+          "value": "3000"
+        },
+        {
+          "name": "API_VERSION",
+          "value": "v1"
+        },
+        {
+          "name": "API_PREFIX",
+          "value": "/api"
+        },
+        {
+          "name": "SERVER_URL",
+          "value": "https://${domain_name}"
+        },
+        {
+          "name": "CLIENT_URL",
+          "value": "https://${domain_name}"
+        },
+        {
+          "name": "CORS_ORIGINS",
+          "value": "https://${domain_name}"
+        },
+        {
+          "name": "LOG_LEVEL",
+          "value": "info"
+        },
+        {
+          "name": "REDIS_HOST",
+          "value": "${redis_endpoint}"
+        },
+        {
+          "name": "REDIS_PORT",
+          "value": "6379"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "DATABASE_URL",
+          "valueFrom": "arn:aws:secretsmanager:${aws_region}:${aws_account_id}:secret:metronomics/${environment}/database:URL::"
+        },
+        {
+          "name": "FIREBASE_PROJECT_ID",
+          "valueFrom": "arn:aws:secretsmanager:${aws_region}:${aws_account_id}:secret:metronomics/${environment}/firebase-config:PROJECT_ID::"
+        },
+        {
+          "name": "FIREBASE_CLIENT_EMAIL",
+          "valueFrom": "arn:aws:secretsmanager:${aws_region}:${aws_account_id}:secret:metronomics/${environment}/firebase-service-account:CLIENT_EMAIL::"
+        },
+        {
+          "name": "FIREBASE_PRIVATE_KEY",
+          "valueFrom": "arn:aws:secretsmanager:${aws_region}:${aws_account_id}:secret:metronomics/${environment}/firebase-service-account:PRIVATE_KEY::"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/metronomics-${environment}-api",
+          "awslogs-region": "${aws_region}",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "true"
+        }
+      },
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "curl -f http://localhost:3000/api/v1/health || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      },
+      "dependsOn": [
+        {
+          "containerName": "frontend",
+          "condition": "HEALTHY"
+        }
+      ]
+    },
+    {
+      "name": "worker",
+      "image": "${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com/metronomics-${environment}-worker:latest",
+      "essential": true,
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "${environment}"
+        },
+        {
+          "name": "LOG_LEVEL",
+          "value": "info"
+        },
+        {
+          "name": "REDIS_HOST",
+          "value": "${redis_endpoint}"
+        },
+        {
+          "name": "REDIS_PORT",
+          "value": "6379"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "DATABASE_URL",
+          "valueFrom": "arn:aws:secretsmanager:${aws_region}:${aws_account_id}:secret:metronomics/${environment}/database:URL::"
+        },
+        {
+          "name": "FIREBASE_PROJECT_ID",
+          "valueFrom": "arn:aws:secretsmanager:${aws_region}:${aws_account_id}:secret:metronomics/${environment}/firebase-config:PROJECT_ID::"
+        },
+        {
+          "name": "FIREBASE_CLIENT_EMAIL",
+          "valueFrom": "arn:aws:secretsmanager:${aws_region}:${aws_account_id}:secret:metronomics/${environment}/firebase-service-account:CLIENT_EMAIL::"
+        },
+        {
+          "name": "FIREBASE_PRIVATE_KEY",
+          "valueFrom": "arn:aws:secretsmanager:${aws_region}:${aws_account_id}:secret:metronomics/${environment}/firebase-service-account:PRIVATE_KEY::"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/metronomics-${environment}-worker",
+          "awslogs-region": "${aws_region}",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "true"
+        }
+      },
+      "dependsOn": [
+        {
+          "containerName": "api",
+          "condition": "HEALTHY"
+        }
+      ]
+    }
+  ],
+  "volumes": [],
+  "placementConstraints": [],
+  "tags": [
+    {
+      "key": "Environment",
+      "value": "${environment}"
+    },
+    {
+      "key": "Project",
+      "value": "metronomics"
+    },
+    {
+      "key": "ManagedBy",
+      "value": "Terraform"
+    }
+  ]
+}
