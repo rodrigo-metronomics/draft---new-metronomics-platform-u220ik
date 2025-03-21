@@ -1,0 +1,150 @@
+version: '3.8'
+
+services:
+  # Frontend service (React application)
+  frontend:
+    image: metronomics-frontend:dev
+    build:
+      context: ../../src/web
+      dockerfile: ../infrastructure/docker/Dockerfile.web
+      args:
+        - VITE_API_URL=http://localhost:3000/api
+        - FIREBASE_API_KEY=${FIREBASE_API_KEY}
+        - FIREBASE_AUTH_DOMAIN=${FIREBASE_AUTH_DOMAIN}
+        - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+        - FIREBASE_STORAGE_BUCKET=${FIREBASE_STORAGE_BUCKET}
+        - FIREBASE_MESSAGING_SENDER_ID=${FIREBASE_MESSAGING_SENDER_ID}
+        - FIREBASE_APP_ID=${FIREBASE_APP_ID}
+    ports:
+      - "80:80"
+    volumes:
+      - ../../src/web:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    environment:
+      - NODE_ENV=development
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/health", "||", "exit", "1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  # Backend service (Node.js API)
+  backend:
+    image: metronomics-backend:dev
+    build:
+      context: ../../src/backend
+      dockerfile: ../infrastructure/docker/Dockerfile.backend
+      args:
+        - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/metronomics?schema=public
+        - REDIS_HOST=redis
+        - REDIS_PORT=6379
+        - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+        - FIREBASE_CLIENT_EMAIL=${FIREBASE_CLIENT_EMAIL}
+        - FIREBASE_PRIVATE_KEY=${FIREBASE_PRIVATE_KEY}
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../../src/backend:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - API_VERSION=v1
+      - API_PREFIX=/api
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/metronomics?schema=public
+      - REDIS_URL=redis://redis:6379
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - FIREBASE_CLIENT_EMAIL=${FIREBASE_CLIENT_EMAIL}
+      - FIREBASE_PRIVATE_KEY=${FIREBASE_PRIVATE_KEY}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/v1/health", "||", "exit", "1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    command: npm run dev
+
+  # Worker service (Background jobs)
+  worker:
+    image: metronomics-worker:dev
+    build:
+      context: ../../src/backend
+      dockerfile: ../infrastructure/docker/Dockerfile.backend
+      args:
+        - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/metronomics?schema=public
+        - REDIS_HOST=redis
+        - REDIS_PORT=6379
+        - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+        - FIREBASE_CLIENT_EMAIL=${FIREBASE_CLIENT_EMAIL}
+        - FIREBASE_PRIVATE_KEY=${FIREBASE_PRIVATE_KEY}
+    volumes:
+      - ../../src/backend:/app
+      - /app/node_modules
+    depends_on:
+      - postgres
+      - redis
+      - backend
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/metronomics?schema=public
+      - REDIS_URL=redis://redis:6379
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}
+      - FIREBASE_CLIENT_EMAIL=${FIREBASE_CLIENT_EMAIL}
+      - FIREBASE_PRIVATE_KEY=${FIREBASE_PRIVATE_KEY}
+    restart: unless-stopped
+    command: npm run worker:dev
+
+  # PostgreSQL database
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=metronomics
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  # Redis for caching and session management
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ../redis/redis.conf:/usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    command: redis-server /usr/local/etc/redis/redis.conf
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  metronomics-network:
