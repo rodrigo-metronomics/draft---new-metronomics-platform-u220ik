@@ -1,0 +1,79 @@
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+.pnp/
+.pnp.js
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.nuxt/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+src/backend/.env
+src/web/.env
+
+# Testing
+coverage/
+.nyc_output/
+
+# IDE and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Compiled output
+*.js.map
+*.d.ts
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+!infrastructure/terraform/environments/**/*.tfvars
+.terraformrc
+terraform.rc
+
+# Docker
+.docker/
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Prisma
+src/backend/prisma/migrations/**/
+!src/backend/prisma/migrations/.gitkeep
+
+# Cache directories
+.cache/
+.eslintcache
+.stylelintcache
+
+# Temporary files
+tmp/
+temp/
+
+# AWS
+.aws/
+
+# Honeycomb
+.honeycomb
