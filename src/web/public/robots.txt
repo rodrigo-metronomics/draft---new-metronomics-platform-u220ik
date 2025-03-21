@@ -1,0 +1,25 @@
+User-agent: *
+Disallow: /api/
+Disallow: /auth/
+Disallow: /dashboard/
+Disallow: /meetings/
+Disallow: /metrics/
+Disallow: /strategy/
+Disallow: /kffm/
+Disallow: /users/
+Disallow: /organization/
+
+# Allow public pages
+Allow: /
+Allow: /login
+Allow: /register
+Allow: /about
+Allow: /contact
+Allow: /terms
+Allow: /privacy
+
+# Allow shared dashboards with proper tokens
+Allow: /shared/
+
+# Sitemap location
+Sitemap: https://metronomics.io/sitemap.xml
