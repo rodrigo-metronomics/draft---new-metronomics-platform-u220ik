@@ -1,0 +1,320 @@
+{
+  "Comment": "CloudFront Distribution for Metronomics Platform",
+  "CallerReference": "${timestamp}",
+  "Enabled": true,
+  "DefaultRootObject": "index.html",
+  "Aliases": {
+    "Quantity": 2,
+    "Items": [
+      "${domain_name}",
+      "www.${domain_name}"
+    ]
+  },
+  "Origins": {
+    "Quantity": 2,
+    "Items": [
+      {
+        "Id": "S3-metronomics-${environment}-storage",
+        "DomainName": "${bucket_regional_domain_name}",
+        "OriginPath": "",
+        "CustomHeaders": {
+          "Quantity": 0
+        },
+        "S3OriginConfig": {
+          "OriginAccessIdentity": "origin-access-identity/cloudfront/${origin_access_identity_id}"
+        }
+      },
+      {
+        "Id": "ALB-metronomics-${environment}",
+        "DomainName": "${alb_dns_name}",
+        "OriginPath": "",
+        "CustomHeaders": {
+          "Quantity": 0
+        },
+        "CustomOriginConfig": {
+          "HTTPPort": 80,
+          "HTTPSPort": 443,
+          "OriginProtocolPolicy": "https-only",
+          "OriginSslProtocols": {
+            "Quantity": 1,
+            "Items": [
+              "TLSv1.2"
+            ]
+          },
+          "OriginReadTimeout": 30,
+          "OriginKeepaliveTimeout": 5
+        }
+      }
+    ]
+  },
+  "DefaultCacheBehavior": {
+    "TargetOriginId": "ALB-metronomics-${environment}",
+    "ViewerProtocolPolicy": "redirect-to-https",
+    "AllowedMethods": {
+      "Quantity": 7,
+      "Items": [
+        "GET",
+        "HEAD",
+        "OPTIONS",
+        "PUT",
+        "POST",
+        "PATCH",
+        "DELETE"
+      ],
+      "CachedMethods": {
+        "Quantity": 3,
+        "Items": [
+          "GET",
+          "HEAD",
+          "OPTIONS"
+        ]
+      }
+    },
+    "SmoothStreaming": false,
+    "Compress": true,
+    "LambdaFunctionAssociations": {
+      "Quantity": 0
+    },
+    "FieldLevelEncryptionId": "",
+    "CachePolicyId": "${managed_cache_policy_id}",
+    "OriginRequestPolicyId": "${managed_origin_request_policy_id}",
+    "ForwardedValues": {
+      "QueryString": true,
+      "Cookies": {
+        "Forward": "all"
+      },
+      "Headers": {
+        "Quantity": 3,
+        "Items": [
+          "Origin",
+          "Access-Control-Request-Method",
+          "Access-Control-Request-Headers"
+        ]
+      },
+      "QueryStringCacheKeys": {
+        "Quantity": 0
+      }
+    },
+    "MinTTL": 0,
+    "DefaultTTL": 0,
+    "MaxTTL": 0
+  },
+  "CacheBehaviors": {
+    "Quantity": 3,
+    "Items": [
+      {
+        "PathPattern": "/static/*",
+        "TargetOriginId": "S3-metronomics-${environment}-storage",
+        "ViewerProtocolPolicy": "redirect-to-https",
+        "AllowedMethods": {
+          "Quantity": 3,
+          "Items": [
+            "GET",
+            "HEAD",
+            "OPTIONS"
+          ],
+          "CachedMethods": {
+            "Quantity": 3,
+            "Items": [
+              "GET",
+              "HEAD",
+              "OPTIONS"
+            ]
+          }
+        },
+        "SmoothStreaming": false,
+        "Compress": true,
+        "LambdaFunctionAssociations": {
+          "Quantity": 0
+        },
+        "FieldLevelEncryptionId": "",
+        "CachePolicyId": "${static_cache_policy_id}",
+        "OriginRequestPolicyId": "${cors_origin_request_policy_id}",
+        "ForwardedValues": {
+          "QueryString": false,
+          "Cookies": {
+            "Forward": "none"
+          },
+          "Headers": {
+            "Quantity": 3,
+            "Items": [
+              "Origin",
+              "Access-Control-Request-Method",
+              "Access-Control-Request-Headers"
+            ]
+          },
+          "QueryStringCacheKeys": {
+            "Quantity": 0
+          }
+        },
+        "MinTTL": 86400,
+        "DefaultTTL": 86400,
+        "MaxTTL": 31536000
+      },
+      {
+        "PathPattern": "/assets/*",
+        "TargetOriginId": "S3-metronomics-${environment}-storage",
+        "ViewerProtocolPolicy": "redirect-to-https",
+        "AllowedMethods": {
+          "Quantity": 3,
+          "Items": [
+            "GET",
+            "HEAD",
+            "OPTIONS"
+          ],
+          "CachedMethods": {
+            "Quantity": 3,
+            "Items": [
+              "GET",
+              "HEAD",
+              "OPTIONS"
+            ]
+          }
+        },
+        "SmoothStreaming": false,
+        "Compress": true,
+        "LambdaFunctionAssociations": {
+          "Quantity": 0
+        },
+        "FieldLevelEncryptionId": "",
+        "CachePolicyId": "${static_cache_policy_id}",
+        "OriginRequestPolicyId": "${cors_origin_request_policy_id}",
+        "ForwardedValues": {
+          "QueryString": false,
+          "Cookies": {
+            "Forward": "none"
+          },
+          "Headers": {
+            "Quantity": 3,
+            "Items": [
+              "Origin",
+              "Access-Control-Request-Method",
+              "Access-Control-Request-Headers"
+            ]
+          },
+          "QueryStringCacheKeys": {
+            "Quantity": 0
+          }
+        },
+        "MinTTL": 86400,
+        "DefaultTTL": 86400,
+        "MaxTTL": 31536000
+      },
+      {
+        "PathPattern": "/api/*",
+        "TargetOriginId": "ALB-metronomics-${environment}",
+        "ViewerProtocolPolicy": "redirect-to-https",
+        "AllowedMethods": {
+          "Quantity": 7,
+          "Items": [
+            "GET",
+            "HEAD",
+            "OPTIONS",
+            "PUT",
+            "POST",
+            "PATCH",
+            "DELETE"
+          ],
+          "CachedMethods": {
+            "Quantity": 3,
+            "Items": [
+              "GET",
+              "HEAD",
+              "OPTIONS"
+            ]
+          }
+        },
+        "SmoothStreaming": false,
+        "Compress": true,
+        "LambdaFunctionAssociations": {
+          "Quantity": 0
+        },
+        "FieldLevelEncryptionId": "",
+        "CachePolicyId": "${api_cache_policy_id}",
+        "OriginRequestPolicyId": "${api_origin_request_policy_id}",
+        "ForwardedValues": {
+          "QueryString": true,
+          "Cookies": {
+            "Forward": "all"
+          },
+          "Headers": {
+            "Quantity": 7,
+            "Items": [
+              "Authorization",
+              "Origin",
+              "Access-Control-Request-Method",
+              "Access-Control-Request-Headers",
+              "Accept",
+              "Content-Type",
+              "Referer"
+            ]
+          },
+          "QueryStringCacheKeys": {
+            "Quantity": 0
+          }
+        },
+        "MinTTL": 0,
+        "DefaultTTL": 0,
+        "MaxTTL": 0
+      }
+    ]
+  },
+  "CustomErrorResponses": {
+    "Quantity": 2,
+    "Items": [
+      {
+        "ErrorCode": 404,
+        "ResponsePagePath": "/index.html",
+        "ResponseCode": "200",
+        "ErrorCachingMinTTL": 10
+      },
+      {
+        "ErrorCode": 403,
+        "ResponsePagePath": "/index.html",
+        "ResponseCode": "200",
+        "ErrorCachingMinTTL": 10
+      }
+    ]
+  },
+  "PriceClass": "PriceClass_100",
+  "Restrictions": {
+    "GeoRestriction": {
+      "RestrictionType": "none",
+      "Quantity": 0
+    }
+  },
+  "WebACLId": "${web_acl_id}",
+  "HttpVersion": "http2",
+  "IsIPV6Enabled": true,
+  "ViewerCertificate": {
+    "ACMCertificateArn": "${acm_certificate_arn}",
+    "SSLSupportMethod": "sni-only",
+    "MinimumProtocolVersion": "TLSv1.2_2021",
+    "Certificate": "${acm_certificate_arn}",
+    "CertificateSource": "acm"
+  },
+  "Logging": {
+    "Enabled": true,
+    "IncludeCookies": false,
+    "Bucket": "${logging_bucket}.s3.amazonaws.com",
+    "Prefix": "cloudfront/metronomics-${environment}/"
+  },
+  "OriginGroups": {
+    "Quantity": 0
+  },
+  "ContinuousDeploymentPolicyId": "",
+  "Tags": [
+    {
+      "Key": "Environment",
+      "Value": "${environment}"
+    },
+    {
+      "Key": "Project",
+      "Value": "metronomics"
+    },
+    {
+      "Key": "ManagedBy",
+      "Value": "Terraform"
+    }
+  ]
+}
