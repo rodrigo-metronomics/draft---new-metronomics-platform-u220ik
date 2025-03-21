@@ -1,0 +1,65 @@
+# Each line is a file pattern followed by one or more owners
+# Order is important - the last matching pattern has the highest precedence
+
+# ======================================================
+# Root Configuration
+# ======================================================
+# Default owners for any files not explicitly matched by other patterns
+* @project-lead @org/core-team
+
+# ======================================================
+# Infrastructure Configuration
+# ======================================================
+# DevOps team owns all infrastructure configuration
+infrastructure/** @devops-lead @org/devops-team
+
+# DevOps team owns GitHub workflows and configuration
+.github/** @devops-lead @org/devops-team
+
+# ======================================================
+# Backend Code
+# ======================================================
+# Backend team owns all server-side code
+src/backend/** @backend-lead @org/backend-team
+
+# Database schema changes require review from database expert
+src/backend/prisma/** @database-expert @backend-lead
+
+# ======================================================
+# Frontend Code
+# ======================================================
+# Frontend team owns all client-side code
+src/web/** @frontend-lead @org/frontend-team
+
+# UI components require review from UI expert
+src/web/src/components/** @ui-expert @frontend-lead
+
+# ======================================================
+# Testing
+# ======================================================
+# QA team reviews all test files
+**/*.test.ts @qa-lead @org/qa-team
+
+# QA team reviews all React component test files
+**/*.test.tsx @qa-lead @org/qa-team
+
+# ======================================================
+# Documentation
+# ======================================================
+# Documentation requires review from documentation maintainer
+**/*.md @docs-maintainer @project-lead
+
+# Project lead reviews main README changes
+README.md @project-lead
+
+# ======================================================
+# Security-sensitive Code
+# ======================================================
+# Authentication services require security expert review
+src/backend/src/services/auth/** @security-expert @backend-lead
+
+# Authentication middleware requires security expert review
+src/backend/src/api/middlewares/authentication.ts @security-expert @backend-lead
+
+# Authorization middleware requires security expert review
+src/backend/src/api/middlewares/authorization.ts @security-expert @backend-lead
