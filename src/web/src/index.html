@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Metronomics Platform - A comprehensive solution for implementing the Metronomics framework for business growth and team alignment">
+    <meta name="theme-color" content="#3B82F6">
+    
+    <title>Metronomics Platform</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- Manifest for Progressive Web App -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Google Fonts - Inter -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+
+    <!-- PrimeReact CSS -->
+    <link rel="stylesheet" href="/node_modules/primereact/resources/themes/lara-light-indigo/theme.css">
+    <link rel="stylesheet" href="/node_modules/primereact/resources/primereact.min.css">
+
+    <!-- PrimeFlex CSS -->
+    <link rel="stylesheet" href="/node_modules/primeflex/primeflex.css">
+
+    <!-- Custom Styles -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        #root {
+            height: 100%;
+        }
+
+        .app-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+        }
+
+        .app-loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3B82F6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <div class="app-loading">
+            <div class="app-loading-spinner"></div>
+            <p>Loading Metronomics Platform...</p>
+        </div>
+    </div>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <script type="module" src="/src/index.tsx"></script>
+</body>
+</html>
